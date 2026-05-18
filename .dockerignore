@@ -1,0 +1,13 @@
+target/
+.git/
+.github/
+.idea/
+.vscode/
+*.iml
+.mvn/wrapper/maven-wrapper.jar
+HELP.md
+README.md
+LICENSE
+docker/
+scripts/
+capturas/
