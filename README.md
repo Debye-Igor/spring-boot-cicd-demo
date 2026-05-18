@@ -1,15 +1,15 @@
 # Spring Boot CI/CD Demo
 
-Aplicacion Task API (gestion de tareas tipo CRUD) que sirve como base para demostrar un flujo completo de DevOps: control de versiones con GitFlow, integracion continua con GitHub Actions y despliegue Blue-Green con Docker.
+Aplicación Task API (gestión de tareas tipo CRUD) que sirve como base para demostrar un flujo completo de DevOps: control de versiones con GitFlow, integración continua con GitHub Actions y despliegue Blue-Green con Docker.
 
-Este proyecto fue desarrollado como parte del examen final del curso de Automatizacion de Pruebas de la carrera de Ingenieria en Informatica.
+Este proyecto fue desarrollado como parte del examen final del curso de Automatización de Pruebas de la carrera de Ingeniería en Informática.
 
-## Tecnologias usadas
+## Tecnologías usadas
 
 - **Backend:** Java 17 + Spring Boot 3.5
 - **Build:** Maven 3.9
 - **Pruebas:** JUnit 5, Selenium WebDriver, Spring Boot Test
-- **Containerizacion:** Docker + Docker Compose
+- **Containerización:** Docker + Docker Compose
 - **CI/CD:** GitHub Actions
 - **Router:** Nginx
 
@@ -18,19 +18,19 @@ Este proyecto fue desarrollado como parte del examen final del curso de Automati
 ```
 spring-boot-cicd-demo/
 ├── .github/workflows/      Pipeline de GitHub Actions
-├── docker/                 Configuracion de Docker Compose y Nginx
+├── docker/                 Configuración de Docker Compose y Nginx
 ├── scripts/                Scripts de deploy y rollback
 ├── src/
-│   ├── main/java/          Codigo de la aplicacion
-│   ├── main/resources/     Configuracion y archivos estaticos
-│   └── test/java/          Pruebas unitarias, integracion y aceptacion
+│   ├── main/java/          Código de la aplicación
+│   ├── main/resources/     Configuración y archivos estáticos
+│   └── test/java/          Pruebas unitarias, integración y aceptación
 ├── Dockerfile              Imagen Docker multi-stage
-└── pom.xml                 Configuracion de Maven
+└── pom.xml                 Configuración de Maven
 ```
 
-## Como ejecutar el proyecto
+## Cómo ejecutar el proyecto
 
-### 1. Ejecutar la aplicacion localmente (sin Docker)
+### 1. Ejecutar la aplicación localmente (sin Docker)
 
 Requiere Java 17 y Maven 3.9 instalados.
 
@@ -38,7 +38,7 @@ Requiere Java 17 y Maven 3.9 instalados.
 ./mvnw spring-boot:run
 ```
 
-La aplicacion queda disponible en `http://localhost:8080`.
+La aplicación queda disponible en `http://localhost:8080`.
 
 ### 2. Ejecutar las pruebas
 
@@ -48,7 +48,7 @@ La aplicacion queda disponible en `http://localhost:8080`.
 ./mvnw test
 ```
 
-**Unitarias + integracion:**
+**Unitarias + integración:**
 
 ```bash
 ./mvnw verify "-Dtest=!*AcceptanceTest"
@@ -69,14 +69,14 @@ docker compose up -d
 
 Endpoints disponibles:
 
-- `http://localhost` - acceso a traves del router nginx
+- `http://localhost` - acceso a través del router nginx
 - `http://localhost:8081` - acceso directo a BLUE (v1.0.0)
 - `http://localhost:8082` - acceso directo a GREEN (v2.0.0)
 
 ### 4. Cambiar entre versiones (deploy y rollback)
 
 ```bash
-# Cambiar trafico a GREEN
+# Cambiar tráfico a GREEN
 ./scripts/deploy-bluegreen.sh green
 
 # Volver a BLUE (rollback)
@@ -89,52 +89,52 @@ El proyecto incluye 3 tipos de pruebas separadas para que el pipeline pueda ejec
 
 ### Pruebas unitarias
 
-- Ubicacion: `src/test/java/com/demo/taskapi/service/`
+- Ubicación: `src/test/java/com/demo/taskapi/service/`
 - Archivos terminan en `*Test.java`
 - Las ejecuta Maven con el plugin **Surefire** en la fase `test`
-- Validan la logica del `TaskService` sin levantar Spring
-- Son rapidas (menos de 1 segundo)
+- Validan la lógica del `TaskService` sin levantar Spring
+- Son rápidas (menos de 1 segundo)
 
-### Pruebas de integracion
+### Pruebas de integración
 
-- Ubicacion: `src/test/java/com/demo/taskapi/controller/`
+- Ubicación: `src/test/java/com/demo/taskapi/controller/`
 - Archivos terminan en `*IT.java`
 - Las ejecuta Maven con el plugin **Failsafe** en la fase `verify`
 - Levantan el contexto completo de Spring Boot y validan los endpoints REST
-- Mas lentas (3-5 segundos) porque inicializan toda la app
+- Más lentas (3-5 segundos) porque inicializan toda la app
 
-### Pruebas de aceptacion
+### Pruebas de aceptación
 
-- Ubicacion: `src/test/java/com/demo/taskapi/acceptance/`
+- Ubicación: `src/test/java/com/demo/taskapi/acceptance/`
 - Archivos terminan en `*AcceptanceTest.java`
 - Usan **Selenium WebDriver** para probar la interfaz web
 - Se ejecutan manualmente (no en cada push)
 
-## Pipeline de Integracion Continua
+## Pipeline de Integración Continua
 
-El pipeline esta definido en `.github/workflows/ci.yml` y se ejecuta automaticamente en cada push a `main`, `develop` o cualquier rama `feature/*`.
+El pipeline está definido en `.github/workflows/ci.yml` y se ejecuta automáticamente en cada push a `main`, `develop` o cualquier rama `feature/*`.
 
 Stages del pipeline:
 
-1. **Checkout** - descarga el codigo
+1. **Checkout** - descarga el código
 2. **Configurar JDK 17** - instala Java en el runner
 3. **Compilar el proyecto** - `mvn clean compile`
 4. **Pruebas unitarias** - `mvn test` (plugin Surefire)
-5. **Pruebas de integracion** - `mvn verify` (plugin Failsafe)
+5. **Pruebas de integración** - `mvn verify` (plugin Failsafe)
 6. **Empaquetar** - genera el JAR final
 7. **Publicar artefactos** - sube reportes y el JAR como evidencia
 
 ## Estrategia de despliegue Blue-Green
 
-La estrategia Blue-Green consiste en mantener dos versiones de la aplicacion corriendo en paralelo y cambiar el trafico de una a otra sin tiempo de caida.
+La estrategia Blue-Green consiste en mantener dos versiones de la aplicación corriendo en paralelo y cambiar el tráfico de una a otra sin tiempo de caída.
 
-- **BLUE** corre en el puerto 8081 (version "estable" actual)
-- **GREEN** corre en el puerto 8082 (version "nueva" en pruebas)
-- **Nginx** en el puerto 80 actua como router y decide a cual de las dos enviar el trafico
+- **BLUE** corre en el puerto 8081 (versión "estable" actual)
+- **GREEN** corre en el puerto 8082 (versión "nueva" en pruebas)
+- **Nginx** en el puerto 80 actúa como router y decide a cuál de las dos enviar el tráfico
 
-Cuando se quiere liberar una nueva version:
+Cuando se quiere liberar una nueva versión:
 
-1. Se levanta GREEN con la nueva version
+1. Se levanta GREEN con la nueva versión
 2. Se valida que GREEN responde bien (smoke test)
 3. Se modifica `nginx.conf` para apuntar a GREEN
 4. Se recarga nginx (sin detenerlo, sin downtime)
@@ -144,13 +144,13 @@ Los scripts `deploy-bluegreen.sh` y `rollback.sh` automatizan este proceso.
 
 ## Flujo de trabajo con Git
 
-El proyecto usa **GitFlow** como estrategia de ramificacion:
+El proyecto usa **GitFlow** como estrategia de ramificación:
 
-- `main` - codigo en produccion
-- `develop` - integracion de nuevas funcionalidades
+- `main` - código en producción
+- `develop` - integración de nuevas funcionalidades
 - `feature/*` - cada nueva funcionalidad se desarrolla en su propia rama
 
-Las features se integran a `develop` mediante Pull Requests, y solo despues de que el pipeline pase en verde.
+Las features se integran a `develop` mediante Pull Requests, y solo después de que el pipeline pase en verde.
 
 ## Autor
 
