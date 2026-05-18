@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Task API</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; padding: 20px; }
+        h1 { color: #2c3e50; }
+        .version-badge { display: inline-block; padding: 5px 12px; border-radius: 4px; color: white; background: #3498db; font-size: 14px; }
+        .version-badge.green { background: #27ae60; }
+        ul { list-style: none; padding: 0; }
+        li { padding: 10px; border-bottom: 1px solid #eee; }
+        .completed { text-decoration: line-through; color: #999; }
+        input, button { padding: 8px; margin: 4px; }
+        button { background: #3498db; color: white; border: none; cursor: pointer; border-radius: 4px; }
+        button:hover { background: #2980b9; }
+    </style>
+</head>
+<body>
+    <h1>📋 Task API <span id="versionBadge" class="version-badge">v?</span></h1>
+
+    <div>
+        <input type="text" id="taskTitle" placeholder="Título de la tarea" />
+        <input type="text" id="taskDesc" placeholder="Descripción" />
+        <button onclick="addTask()">Agregar</button>
+    </div>
+
+    <ul id="taskList"></ul>
+
+    <script>
+        async function loadVersion() {
+            const res = await fetch('/api/version');
+            const data = await res.json();
+            const badge = document.getElementById('versionBadge');
+            badge.textContent = data.version;
+            if (data.version.includes('GREEN')) badge.classList.add('green');
+        }
+
+        async function loadTasks() {
+            const res = await fetch('/api/tasks');
+            const tasks = await res.json();
+            document.getElementById('taskList').innerHTML = tasks.map(t =>
+                `<li class="${t.completed ? 'completed' : ''}">
+                    <strong>${t.title}</strong> - ${t.description || ''}
+                    <button onclick="deleteTask(${t.id})">🗑️</button>
+                </li>`
+            ).join('');
+        }
+
+        async function addTask() {
+            const title = document.getElementById('taskTitle').value;
+            const description = document.getElementById('taskDesc').value;
+            if (!title) return alert('El título es obligatorio');
+            await fetch('/api/tasks', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({title, description})
+            });
+            document.getElementById('taskTitle').value = '';
+            document.getElementById('taskDesc').value = '';
+            loadTasks();
+        }
+
+        async function deleteTask(id) {
+            await fetch('/api/tasks/' + id, {method: 'DELETE'});
+            loadTasks();
+        }
+
+        loadVersion();
+        loadTasks();
+    </script>
+</body>
+</html>
