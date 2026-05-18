@@ -15,6 +15,7 @@ Este proyecto fue desarrollado como parte del examen final del curso de Automati
 
 ## Estructura del proyecto
 
+```
 spring-boot-cicd-demo/
 ├── .github/workflows/      Pipeline de GitHub Actions
 ├── docker/                 Configuracion de Docker Compose y Nginx
@@ -25,6 +26,7 @@ spring-boot-cicd-demo/
 │   └── test/java/          Pruebas unitarias, integracion y aceptacion
 ├── Dockerfile              Imagen Docker multi-stage
 └── pom.xml                 Configuracion de Maven
+```
 
 ## Como ejecutar el proyecto
 
@@ -41,11 +43,13 @@ La aplicacion queda disponible en `http://localhost:8080`.
 ### 2. Ejecutar las pruebas
 
 **Solo unitarias:**
+
 ```bash
 ./mvnw test
 ```
 
 **Unitarias + integracion:**
+
 ```bash
 ./mvnw verify "-Dtest=!*AcceptanceTest"
 ```
@@ -64,6 +68,7 @@ docker compose up -d
 ```
 
 Endpoints disponibles:
+
 - `http://localhost` - acceso a traves del router nginx
 - `http://localhost:8081` - acceso directo a BLUE (v1.0.0)
 - `http://localhost:8082` - acceso directo a GREEN (v2.0.0)
@@ -139,9 +144,9 @@ Los scripts `deploy-bluegreen.sh` y `rollback.sh` automatizan este proceso.
 
 ## Flujo de trabajo con Git
 
-El proyecto usa **GitFlow** como estrategia de ramificación:
+El proyecto usa **GitFlow** como estrategia de ramificacion:
 
-- `main` - código en produccion
+- `main` - codigo en produccion
 - `develop` - integracion de nuevas funcionalidades
 - `feature/*` - cada nueva funcionalidad se desarrolla en su propia rama
 
