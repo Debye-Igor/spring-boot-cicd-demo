@@ -1,0 +1,68 @@
+name: CI - Build y Pruebas Automatizadas
+
+# Cuando se ejecuta el pipeline
+on:
+  push:
+    branches: [ main, develop, 'feature/**' ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-and-test:
+    name: Build y Pruebas
+    runs-on: ubuntu-latest
+
+    steps:
+      # Stage 1: Checkout del codigo
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      # Configurar Java 17
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      # Stage 2: Build
+      - name: Compilar el proyecto
+        run: ./mvnw clean compile
+
+      # Stage 3: Pruebas Unitarias (Surefire)
+      - name: Ejecutar pruebas unitarias
+        run: ./mvnw test
+
+      # Publicar reporte de pruebas unitarias aunque fallen
+      - name: Publicar reporte de pruebas unitarias
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-pruebas-unitarias
+          path: target/surefire-reports/
+          retention-days: 7
+
+      # Stage 4: Pruebas de Integracion (Failsafe)
+      - name: Ejecutar pruebas de integracion
+        run: ./mvnw verify "-Dtest=!*AcceptanceTest"
+
+      # Publicar reporte de pruebas de integracion
+      - name: Publicar reporte de pruebas de integracion
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-pruebas-integracion
+          path: target/failsafe-reports/
+          retention-days: 7
+
+      # Empaquetar el JAR final
+      - name: Empaquetar aplicacion
+        run: ./mvnw package -DskipTests
+
+      # Guardar el JAR generado
+      - name: Subir artefacto JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: taskapi-jar
+          path: target/*.jar
+          retention-days: 7
